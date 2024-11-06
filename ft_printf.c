@@ -6,51 +6,58 @@
 /*   By: itsiros <itsiros@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 15:38:10 by itsiros           #+#    #+#             */
-/*   Updated: 2024/11/05 17:18:17 by itsiros          ###   ########.fr       */
+/*   Updated: 2024/11/06 19:35:03 by itsiros          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include <stdio.h>
 
-// int	count_occurences(const char *str)
-// {
-// 	int	i;
-// 	int	count;
-
-// 	i = 0;
-// 	count = 0;
-// 	while (str[i])
-// 	{
-// 		if (str[i] == '%' && str[i + 1] != '%')
-// 			count++;
-// 		else if (str[i + 1] == '%')
-// 		{
-// 			count++;
-// 			i++;
-// 		}
-// 		i++;
-// 	}
-// 	return (count);
-// }
-
-void	ft_putchar_fd(char c, int fd)
+int	ft_putchar_fd(char c, int fd, int count)
 {
 	if (fd < 0)
-		return ;
+		return (-1);
 	write(fd, &c, 1);
+	count++;
+	return (count);
 }
 
-void	ft_putstr_fd(char *s, int fd)
+int	ft_putnbr_fd(int n, int fd, int count)
+{
+	unsigned int	i;
+
+	if (n < 0)
+	{
+		count = ft_putchar_fd('-', fd, count);
+		n *= -1;
+	}
+	i = n;
+	if (i > 9)
+	{
+		count = ft_putnbr_fd(i / 10, fd, count);
+		count = ft_putnbr_fd(i % 10, fd, count);
+	}
+	else
+		count = ft_putchar_fd(i + '0', fd, count);
+	return (count);
+}
+
+int	ft_putstr_fd(char *s, int fd, int count)
 {
 	size_t	i;
 
 	i = 0;
+	if (!s)
+	{
+		write(fd, "(null)", 6);
+		return (count + 6);
+	}
 	while (s[i])
-		ft_putchar_fd(s[i++], fd);
+		count = ft_putchar_fd(s[i++], fd, count);
+	return (count);
 }
 
-void	print_pointer_hex(void *ptr)
+int	print_pointer_hex(void *ptr, int count)
 {
 	char		buffer[20];
 	int			index;
@@ -72,20 +79,42 @@ void	print_pointer_hex(void *ptr)
 		start--;
 	}
 	write(1, buffer, index);
+	return (count + index);
 }
 
-void	ft_conversions(const char *str, va_list args)
+int	unsigned_casting(int i, int fd, int count)
+{
+	unsigned int	u;
+
+	u = (unsigned int) i;
+	if (i >= 0)
+		return (ft_putnbr_fd(i, fd, count));
+	else
+	{
+		if (u > 10)
+		{
+			count = unsigned_casting(u / 10, fd, count);
+			count = ft_putnbr_fd(u % 10, fd, count);
+		}
+		return (count);
+	}
+}
+
+int	ft_conversions(const char *str, va_list args, int count)
 {
 	if (*str == '%')
-		ft_putchar_fd('%', 1);
+		return (ft_putchar_fd('%', 1, count));
 	if (*str == 'c')
-		ft_putchar_fd(va_arg(args, int), 1);
+		return (ft_putchar_fd(va_arg(args, int), 1, count));
 	if (*str == 's')
-		ft_putstr_fd(va_arg(args, char *), 1);
+		return (ft_putstr_fd(va_arg(args, char *), 1, count));
 	if (*str == 'p')
-		print_pointer_hex(va_arg(args, char *));
-	//if (str == 'i')
-	return ;
+		return (print_pointer_hex(va_arg(args, char *), count));
+	if (*str == 'd' || *str == 'i')
+		return (ft_putnbr_fd(va_arg(args, int), 1, count));
+	if (*str == 'u')
+		return (unsigned_casting(va_arg(args, int), 1, count));
+	return (0);
 }
 
 int	ft_printf(const char *str, ...)
@@ -98,23 +127,35 @@ int	ft_printf(const char *str, ...)
 	while (*str != '\0')
 	{
 		if (*str != '%')
-			ft_putchar_fd(*str, 1);
+			i = ft_putchar_fd(*str, 1, i);
 		else
 		{
 			str++;
-			ft_conversions(str, args);
+			i = ft_conversions(str, args, i);
 		}
 		str++;
-		i++;
 	}
 	va_end (args);
 	return (i);
 }
 // int main ()
 // {
-// 	int a = 42;
-//     void *c = &a;
-// 	ft_printf("Helloppl%p\n", c);
-// 	printf("Helloppl%p\n", c);
+// 	//char *s = "SDFASFAAS";
+// 	int a;
+// 	int b;
+// 	// a = ft_printf("Hellopplee%seeeeee\n", s);
+// 	// printf ("%i\n", a);
+// 	// a = printf("Hellopplee%seeeeee\n", s);
+// 	// printf ("%i\n", a);
+// 	// a = ft_printf("%s", (char *)NULL);
+// 	// printf ("%i\n", a);
+// 	// a = printf("%s", (char *)NULL);
+// 	// printf ("%i\n", a);
+
+// 	a = -10;
+// 	b = ft_printf ("%u", a);
+// 	printf ("\n%i\n", b);
+// 	b = printf ("%u", a);
+// 	printf ("\n%i\n", b);
 // 	return (0);
 // }
