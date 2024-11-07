@@ -6,23 +6,24 @@
 /*   By: itsiros <itsiros@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 15:38:10 by itsiros           #+#    #+#             */
-/*   Updated: 2024/11/06 19:35:03 by itsiros          ###   ########.fr       */
+/*   Updated: 2024/11/07 19:26:04 by itsiros          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include <stdio.h>
 
-int	ft_putchar_fd(char c, int fd, int count)
+static int	ft_putchar_fd(char c, int fd, int count)
 {
-	if (fd < 0)
+		if (count < 0)
+			return (count);
+	if (write(fd, &c, 1) == -1)
 		return (-1);
-	write(fd, &c, 1);
 	count++;
 	return (count);
 }
 
-int	ft_putnbr_fd(int n, int fd, int count)
+static int	ft_putnbr_fd(int n, int fd, int count)
 {
 	unsigned int	i;
 
@@ -42,7 +43,7 @@ int	ft_putnbr_fd(int n, int fd, int count)
 	return (count);
 }
 
-int	ft_putstr_fd(char *s, int fd, int count)
+static int	ft_putstr_fd(char *s, int fd, int count)
 {
 	size_t	i;
 
@@ -57,7 +58,7 @@ int	ft_putstr_fd(char *s, int fd, int count)
 	return (count);
 }
 
-int	print_pointer_hex(void *ptr, int count)
+static int	print_pointer_hex(void *ptr, int count)
 {
 	char		buffer[20];
 	int			index;
@@ -82,7 +83,7 @@ int	print_pointer_hex(void *ptr, int count)
 	return (count + index);
 }
 
-int	unsigned_casting(int i, int fd, int count)
+static int	unsigned_casting(int i, int fd, int count)
 {
 	unsigned int	u;
 
@@ -100,7 +101,33 @@ int	unsigned_casting(int i, int fd, int count)
 	}
 }
 
-int	ft_conversions(const char *str, va_list args, int count)
+static int	convert_to_hex(int i, int fd, int count)
+{
+	unsigned int	u;
+	char			*hex;
+
+	u = (unsigned int) i;
+	hex = "0123456789abcdef";
+	if (u / 16 > 0)
+		count = convert_to_hex(u / 16, fd, count);
+	count = ft_putchar_fd(hex[u % 16], fd, count);
+	return (count);
+}
+
+static int	convert_to_HEX(int i, int fd, int count)
+{
+	unsigned int	u;
+	char			*hex;
+
+	u = (unsigned int) i;
+	hex = "0123456789ABCDEF";
+	if (u / 16 > 0)
+		count = convert_to_HEX(u / 16, fd, count);
+	count = ft_putchar_fd(hex[u % 16], fd, count);
+	return (count);
+}
+
+static int	ft_conversions(const char *str, va_list args, int count)
 {
 	if (*str == '%')
 		return (ft_putchar_fd('%', 1, count));
@@ -114,7 +141,11 @@ int	ft_conversions(const char *str, va_list args, int count)
 		return (ft_putnbr_fd(va_arg(args, int), 1, count));
 	if (*str == 'u')
 		return (unsigned_casting(va_arg(args, int), 1, count));
-	return (0);
+	if (*str == 'x')
+		return (convert_to_hex(va_arg(args, int), 1, count));
+	if (*str == 'X')
+		return (convert_to_HEX(va_arg(args, int), 1, count));
+	return (-1);
 }
 
 int	ft_printf(const char *str, ...)
@@ -141,8 +172,8 @@ int	ft_printf(const char *str, ...)
 // int main ()
 // {
 // 	//char *s = "SDFASFAAS";
-// 	int a;
-// 	int b;
+// 	int a = -1;
+// 	// int b;
 // 	// a = ft_printf("Hellopplee%seeeeee\n", s);
 // 	// printf ("%i\n", a);
 // 	// a = printf("Hellopplee%seeeeee\n", s);
@@ -151,11 +182,17 @@ int	ft_printf(const char *str, ...)
 // 	// printf ("%i\n", a);
 // 	// a = printf("%s", (char *)NULL);
 // 	// printf ("%i\n", a);
-
-// 	a = -10;
-// 	b = ft_printf ("%u", a);
-// 	printf ("\n%i\n", b);
-// 	b = printf ("%u", a);
-// 	printf ("\n%i\n", b);
+// 	// a = -10;
+// 	// b = ft_printf ("%u", a);
+// 	// printf ("\n%i\n", b);
+// 	// b = printf ("%u", a);
+// 	// printf ("\n%i\n", b);
+// 	// ft_printf ("%x\n", a);
+// 	// printf ("%x\n", a);
+// 	// printf ("%d", 15 % 16);
+// 	a = ft_printf("\"\001\002\007\v\010\f\r\n\"");
+// 	printf ("%i\n", a);
+// 	a = printf("\"\001\002\007\v\010\f\r\n\"");
+// 	printf ("%i\n", a);
 // 	return (0);
 // }
