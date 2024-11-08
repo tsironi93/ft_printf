@@ -1,35 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: itsiros <itsiros@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/01 15:38:10 by itsiros           #+#    #+#             */
-/*   Updated: 2024/11/08 18:36:00 by itsiros          ###   ########.fr       */
+/*   Created: 2024/11/08 18:21:40 by itsiros           #+#    #+#             */
+/*   Updated: 2024/11/08 18:29:10 by itsiros          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_printf(const char *str, ...)
+int	ft_putstr_fd(char *s, int fd, int count)
 {
-	va_list	args;
-	int		count;
+	size_t	i;
 
-	va_start(args, str);
-	count = 0;
-	while (*str != '\0')
+	i = 0;
+	if (!s)
 	{
-		if (*str != '%')
-			count = ft_putchar_fd(*str, 1, count);
-		else
-		{
-			str++;
-			count = ft_conversions(str, args, count);
-		}
-		str++;
+		if (write(fd, "(null)", 6) == -1)
+			return (-1);
+		return (count + 6);
 	}
-	va_end (args);
+	while (s[i])
+		count = ft_putchar_fd(s[i++], fd, count);
 	return (count);
 }

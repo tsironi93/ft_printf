@@ -1,35 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   print_pointer_hex.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: itsiros <itsiros@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/01 15:38:10 by itsiros           #+#    #+#             */
-/*   Updated: 2024/11/08 18:36:00 by itsiros          ###   ########.fr       */
+/*   Created: 2024/11/08 18:14:03 by itsiros           #+#    #+#             */
+/*   Updated: 2024/11/08 18:29:14 by itsiros          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_printf(const char *str, ...)
+int	print_pointer_hex(void *ptr, int fd, int count)
 {
-	va_list	args;
-	int		count;
+	uintptr_t	address;
+	char		*hex;
 
-	va_start(args, str);
-	count = 0;
-	while (*str != '\0')
-	{
-		if (*str != '%')
-			count = ft_putchar_fd(*str, 1, count);
-		else
-		{
-			str++;
-			count = ft_conversions(str, args, count);
-		}
-		str++;
-	}
-	va_end (args);
+	hex = "0123456789abcdef";
+	address = (uintptr_t)ptr;
+	count = ft_putchar_fd('0', 1, count);
+	count = ft_putchar_fd('x', 1, count);
+	count = convert_pto_hex(address, fd, count);
 	return (count);
 }

@@ -6,56 +6,17 @@
 #    By: itsiros <itsiros@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/14 17:34:19 by itsiros           #+#    #+#              #
-#    Updated: 2024/11/05 17:01:36 by itsiros          ###   ########.fr        #
+#    Updated: 2024/11/08 18:40:13 by itsiros          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-
-# # Variables
-# CC = cc
-# CFLAGS = -Wall -Wextra -Werror -Iinclude -Ilibft/include
-# LDFLAGS = -Llibft
-# LIBS = -lft
-# SRC = ft_printf.c
-# OBJ = $(SRC:.c=.o)
-# NAME = libftprintf.a
-
-# # NAMEs
-# all: $(NAME)
-
-# # Build static library libftprintf.a
-# $(NAME): $(OBJ) libft/libft.a
-# 	ar rcs $(NAME) $(OBJ) libft/libft.a
-
-# # Compile object files
-# %.o: %.c
-# 	$(CC) $(CFLAGS) -c $< -o $@
-
-# # Ensure libft is built first
-# libft/libft.a:
-# 	$(MAKE) -C libft
-
-# # Clean object files only
-# clean:
-# 	$(MAKE) -C libft clean
-# 	rm -f $(OBJ)
-
-# # Clean everything in libftprintf and libft
-# fclean: clean
-# 	$(MAKE) -C libft fclean
-# 	rm -f $(NAME)
-
-# # Rebuild everything in libftprintf and libft
-# re: fclean all
-# 	$(MAKE) -C libft re
-
-# # Mark phony targets
-# .PHONY: all clean fclean re
 
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -o -I
 
 NAME = libftprintf.a
-SRCS = ft_printf.c
+SRCS = ft_printf.c unsigned_casting.c convert_to_hex.c \
+		convert_pto_hex.c convert_to_caphex.c ft_conversions.c \
+		ft_putstr_fd.c ft_putnbr_fd.c ft_putchar_fd.c print_pointer_hex.c
 OBJS = $(SRCS:.c=.o)
 
 # Default target

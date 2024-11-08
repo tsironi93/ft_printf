@@ -1,35 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   unsigned_casting.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: itsiros <itsiros@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/01 15:38:10 by itsiros           #+#    #+#             */
-/*   Updated: 2024/11/08 18:36:00 by itsiros          ###   ########.fr       */
+/*   Created: 2024/11/08 17:39:46 by itsiros           #+#    #+#             */
+/*   Updated: 2024/11/08 18:29:21 by itsiros          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_printf(const char *str, ...)
+int	unsigned_casting(int i, int fd, int count)
 {
-	va_list	args;
-	int		count;
+	unsigned int	u;
 
-	va_start(args, str);
-	count = 0;
-	while (*str != '\0')
+	u = (unsigned int) i;
+	if (i >= 0)
+		return (ft_putnbr_fd(i, fd, count));
+	else
 	{
-		if (*str != '%')
-			count = ft_putchar_fd(*str, 1, count);
-		else
+		if (u > 10)
 		{
-			str++;
-			count = ft_conversions(str, args, count);
+			count = unsigned_casting(u / 10, fd, count);
+			count = ft_putnbr_fd(u % 10, fd, count);
 		}
-		str++;
+		return (count);
 	}
-	va_end (args);
-	return (count);
 }

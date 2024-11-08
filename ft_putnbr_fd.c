@@ -1,35 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: itsiros <itsiros@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/01 15:38:10 by itsiros           #+#    #+#             */
-/*   Updated: 2024/11/08 18:36:00 by itsiros          ###   ########.fr       */
+/*   Created: 2024/11/08 18:25:38 by itsiros           #+#    #+#             */
+/*   Updated: 2024/11/08 18:29:03 by itsiros          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_printf(const char *str, ...)
+int	ft_putnbr_fd(int n, int fd, int count)
 {
-	va_list	args;
-	int		count;
+	unsigned int	i;
 
-	va_start(args, str);
-	count = 0;
-	while (*str != '\0')
+	if (n < 0)
 	{
-		if (*str != '%')
-			count = ft_putchar_fd(*str, 1, count);
-		else
-		{
-			str++;
-			count = ft_conversions(str, args, count);
-		}
-		str++;
+		count = ft_putchar_fd('-', fd, count);
+		n *= -1;
 	}
-	va_end (args);
+	i = n;
+	if (i > 9)
+	{
+		count = ft_putnbr_fd(i / 10, fd, count);
+		count = ft_putnbr_fd(i % 10, fd, count);
+	}
+	else
+		count = ft_putchar_fd(i + '0', fd, count);
 	return (count);
 }
